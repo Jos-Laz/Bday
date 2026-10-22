@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Magical Birthday Surprise ❤️🏹</title>
+
+  <!-- Google Fonts: Elegant Display + Modern Clean Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- App Container for subtle cinematic camera shake/zoom -->
+  <div id="app-container" class="app-wrapper">
+
+    <!-- Top Navigation / Ambient Controls -->
+    <header class="top-nav">
+      <div class="nav-controls">
+        <!-- Live Customizer Trigger -->
+        <button id="customizer-btn" class="glass-pill-btn" title="Customize Name & Message" aria-label="Customize">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span class="btn-label">Customize</span>
+        </button>
+
+        <!-- Audio Controls (Music Play/Pause + Equalizer) -->
+        <div class="audio-control-group">
+          <button id="music-toggle-btn" class="glass-pill-btn music-btn" title="Toggle Romantic Music" aria-label="Toggle Music">
+            <div class="equalizer-bars">
+              <span class="music-bar"></span>
+              <span class="music-bar"></span>
+              <span class="music-bar"></span>
+            </div>
+            <span class="music-label">Music</span>
+          </button>
+
+          <!-- Mute Button -->
+          <button id="mute-toggle-btn" class="glass-icon-btn" title="Mute Audio" aria-label="Mute Audio">
+            <svg class="icon-unmuted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <svg class="icon-muted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Canvas Layers -->
+    <!-- 1. Starfield, Sparkles, Heart Explosion & Confetti -->
+    <canvas id="particle-canvas"></canvas>
+    <!-- 2. Interactive Bow, Aiming Trajectory & Arrow Flight -->
+    <canvas id="archery-canvas"></canvas>
+
+    <!-- Screen Flash Overlay on Heart Impact -->
+    <div id="screen-flash" class="screen-flash"></div>
+
+    <!-- Twilight Romantic Sunset / Twilight Garden Background (Revealed upon Heart Burst) -->
+    <div id="twilight-garden" class="twilight-garden-stage" aria-hidden="true">
+      <div class="twilight-sky-layer"></div>
+      
+      <!-- Luminous Soft Celestial Moon & Halo -->
+      <div class="twilight-moon">
+        <div class="moon-halo"></div>
+        <div class="moon-body">
+          <div class="moon-crater c1"></div>
+          <div class="moon-crater c2"></div>
+          <div class="moon-crater c3"></div>
+        </div>
+        <div class="moon-cloud cloud-1"></div>
+        <div class="moon-cloud cloud-2"></div>
+      </div>
+
+      <!-- Mountain / Forest silhouettes at twilight -->
+      <div class="twilight-hills">
+        <svg class="hills-svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+          <path class="hill-layer-back" d="M0,192 C280,120 520,240 800,160 C1080,80 1280,200 1440,140 L1440,320 L0,320 Z" />
+          <path class="hill-layer-mid" d="M0,224 C320,160 640,260 960,190 C1200,140 1360,230 1440,200 L1440,320 L0,320 Z" />
+          <path class="hill-layer-fore" d="M0,260 C360,210 720,280 1080,240 C1260,220 1380,260 1440,250 L1440,320 L0,320 Z" />
+        </svg>
+      </div>
+
+      <!-- Soft ground meadow & delicate flora silhouette -->
+      <div class="garden-ground-layer"></div>
+
+      <!-- Atmospheric drifting mist/fog layers -->
+      <div class="garden-mist mist-1"></div>
+      <div class="garden-mist mist-2"></div>
+    </div>
+
+    <!-- Cherry Blossom Tree on Left Screen -->
+    <div id="sakura-tree-container" class="sakura-tree-container" aria-hidden="true"></div>
+
+    <!-- MAIN INTERACTIVE STAGE -->
+    <main class="main-content">
+      
+      <!-- ============================================== -->
+      <!-- SECTION 1: TARGET GLOWING HEART & INSTRUCTIONS -->
+      <!-- ============================================== -->
+      <section id="heart-container" class="heart-stage">
+        <!-- Floating instruction badge -->
+        <div id="instruction-banner" class="instruction-banner">
+          <div class="instruction-content">
+            <span class="sparkle-icon">✨</span>
+            <span id="instruction-text">Shoot the heart to reveal your surprise ❤️</span>
+            <span class="bow-hint-icon">🏹</span>
+          </div>
+          <p class="drag-hint">Drag bow to aim &amp; release to shoot</p>
+        </div>
+
+        <!-- The Glowing Heart Target -->
+        <div id="target-heart" class="glowing-heart-target" role="button" aria-label="Heart Target">
+          <div class="heart-halo"></div>
+          <div class="heart-pulse-ring"></div>
+          
+          <!-- Master SVG Heart with Radial Sheen & Inner Depth -->
+          <svg class="heart-svg" viewBox="0 0 120 110" width="140" height="130">
+            <defs>
+              <radialGradient id="heartGradient" cx="40%" cy="30%" r="75%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="25%" stop-color="#ffd5e2" />
+                <stop offset="55%" stop-color="#ff4071" />
+                <stop offset="90%" stop-color="#c4184a" />
+                <stop offset="100%" stop-color="#7a0d2d" />
+              </radialGradient>
+              <filter id="heartGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="8" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+            <path class="heart-body" 
+                  d="M60,30 C60,30 50,8 30,8 C12,8 0,22 0,42 C0,75 60,105 60,105 C60,105 120,75 120,42 C120,22 108,8 90,8 C70,8 60,30 60,30 Z" 
+                  fill="url(#heartGradient)"
+                  filter="url(#heartGlow)" />
+            <!-- Inner glossy specular highlight -->
+            <path class="heart-highlight" 
+                  d="M26,18 C16,22 8,32 10,45 C11,46 16,30 32,24 C37,22 30,16 26,18 Z" 
+                  fill="rgba(255, 255, 255, 0.45)" />
+          </svg>
+
+          <!-- Heart Fracture Overlay for Shatter Effect -->
+          <div class="fracture-overlay"></div>
+        </div>
+
+        <!-- Miss Notification Tooltip -->
+        <div id="try-again-tooltip" class="try-again-tooltip">
+          Missed! Give it another shot ❤️
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SECTION 2: BIRTHDAY REVEAL STAGE -->
+      <!-- ============================================== -->
+      <section id="reveal-stage" class="reveal-stage hidden">
+        <div class="reveal-inner">
+          
+          <!-- Ambient Backlight for supreme legibility against twilight garden -->
+          <div class="text-aurora-backdrop"></div>
+
+          <!-- Magic Stardust Flash -->
+          <div id="text-reveal-glow" class="text-reveal-glow"></div>
+
+          <!-- Grand Glowing Title (Letter-by-letter cinematic animation) -->
+          <div class="title-container">
+            <h1 id="title-heading" class="grand-title" aria-label="HAPPY BIRTHDAY">
+              <!-- Letters injected dynamically via JS -->
+            </h1>
+            <!-- Soft shine sweep across text -->
+            <div id="title-shine" class="title-shine-sweep"></div>
+          </div>
+
+          <!-- Recipient Name Greeting: ❤️ [NAME] ❤️ -->
+          <div id="recipient-name-container" class="recipient-name-container">
+            <span class="name-sparkle-decor left">✨</span>
+            <h2 id="name-greeting" class="recipient-greeting">
+              ❤️ Sophia ❤️
+            </h2>
+            <span class="name-sparkle-decor right">✨</span>
+          </div>
+
+          <!-- Glassmorphism Birthday Greeting Card in White & Pink -->
+          <div class="glass-greeting-card">
+            <div class="card-glow-border"></div>
+            
+            <!-- Optional Photo Frame -->
+            <div id="photo-container" class="photo-wrapper hidden">
+              <div class="photo-frame">
+                <img id="photo-element" src="" alt="Birthday Special Photo" class="photo-img">
+              </div>
+            </div>
+
+            <!-- Lead Special Message -->
+            <p id="lead-special-msg" class="lead-special-msg">
+              Today is your special day...
+            </p>
+
+            <div class="divider-hearts">
+              <span>🌸</span>
+              <span class="gold-star">✨</span>
+              <span>❤️</span>
+              <span class="gold-star">✨</span>
+              <span>🌸</span>
+            </div>
+
+            <!-- Heartfelt Secondary Message -->
+            <p id="secondary-message" class="secondary-message">
+              May your day be filled with happiness, laughter, love and beautiful memories.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SECTION 3: CELEBRATION (CAKE, BALLOONS, WISH) -->
+      <!-- ============================================== -->
+      <section id="celebration-stage" class="celebration-stage hidden">
+        
+        <!-- Floating Balloons on Left & Right -->
+        <div class="balloons-container left-balloons" aria-hidden="true">
+          <div class="balloon balloon-pink">
+            <div class="balloon-string"></div>
+          </div>
+          <div class="balloon balloon-gold">
+            <div class="balloon-string"></div>
+          </div>
+        </div>
+
+        <div class="balloons-container right-balloons" aria-hidden="true">
+          <div class="balloon balloon-purple">
+            <div class="balloon-string"></div>
+          </div>
+          <div class="balloon balloon-rose">
+            <div class="balloon-string"></div>
+          </div>
+        </div>
+
+        <!-- Multi-tier Interactive Birthday Cake -->
+        <div id="cake-container" class="cake-container">
+          <div class="cake-plate"></div>
+          
+          <!-- Cake Base Tier -->
+          <div class="cake-tier tier-bottom">
+            <div class="cake-frosting-drip"></div>
+          </div>
+
+          <!-- Cake Middle Tier -->
+          <div class="cake-tier tier-middle">
+            <div class="cake-frosting-drip"></div>
+          </div>
+
+          <!-- Cake Top Tier -->
+          <div class="cake-tier tier-top">
+            <div class="cake-berries">
+              <span class="berry">🍓</span>
+              <span class="berry">🍒</span>
+              <span class="berry">🍓</span>
+            </div>
+            
+            <!-- Glowing Candles with Flickering Flames -->
+            <div class="candles-wrapper">
+              <div class="candle candle-1">
+                <div class="wick"></div>
+                <div class="flame">
+                  <div class="flame-glow"></div>
+                </div>
+              </div>
+              <div class="candle candle-2">
+                <div class="wick"></div>
+                <div class="flame">
+                  <div class="flame-glow"></div>
+                </div>
+              </div>
+              <div class="candle candle-3">
+                <div class="wick"></div>
+                <div class="flame">
+                  <div class="flame-glow"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- "Make a Wish" Action Button -->
+        <div class="wish-action-area">
+          <button id="make-wish-btn" class="make-wish-button" aria-label="Make a Wish">
+            <span class="btn-stars">✨</span>
+            <span class="btn-text">Make a Wish ✨</span>
+            <span class="btn-stars">✨</span>
+          </button>
+          <p class="wish-hint">Click to blow out the candles &amp; send your wish to the universe</p>
+        </div>
+
+        <!-- Secret Wish Message Card (Revealed after blowing candles) -->
+        <div id="wish-card" class="wish-card hidden">
+          <div class="wish-card-glow"></div>
+          <div class="wish-icon">🌟</div>
+          <h3 id="wish-title" class="wish-title">Your Wish is on its Way to the Stars! 🌟</h3>
+          <p id="wish-text" class="wish-text">
+            May every candle on your cake bring a thousand dreams to life, and may this coming year be your most magical chapter yet.
+          </p>
+          <div class="wish-footer">
+            <span>✨ Never Stop Dreaming ✨</span>
+          </div>
+        </div>
+
+        <!-- Replay Surprise Button -->
+        <div class="replay-action-area">
+          <button id="replay-btn" class="replay-button" aria-label="Replay Experience">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 4v6h6"></path>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            <span>Shoot Again 🏹</span>
+          </button>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- LIVE CUSTOMIZER MODAL (Accessible via top button) -->
+    <div id="customizer-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-title">Personalize Surprise ❤️</h3>
+          <button id="customizer-close" class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+        <form id="customizer-form" class="modal-form">
+          <div class="form-group">
+            <label for="cfg-name">Birthday Person's Name</label>
+            <input type="text" id="cfg-name" placeholder="e.g. Sophia" required maxlength="30">
+          </div>
+          <div class="form-group">
+            <label for="cfg-message">Birthday Message</label>
+            <textarea id="cfg-message" rows="3" placeholder="Enter special birthday message..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="cfg-wish">Final Wish Message</label>
+            <textarea id="cfg-wish" rows="2" placeholder="Message when candles are blown..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="save-btn">Apply &amp; Save ✨</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts: Clean & Modular Structure -->
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/tree.js"></script>
+  <script src="js/archery.js"></script>
+  <script src="js/cake.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
